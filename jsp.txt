@@ -1,0 +1,55 @@
+/*jsp 常用方法*/
+
+c:forEach varStatus属性
+
+current当前这次迭代的（集合中的）项
+index当前这次迭代从 0 开始的迭代索引
+count当前这次迭代从 1 开始的迭代计数
+first用来表明当前这轮迭代是否为第一次迭代的标志
+last用来表明当前这轮迭代是否为最后一次迭代的标志
+begin属性值
+end属性值
+step属性值 
+
+ 
+
+写个最近使用过的小例子：
+
+<c:forEachitems="${command.modelList}" var="model"varStatus="abc">
+               <tr>
+                   <td><c:outvalue="${abc.count}"/></td>
+                   <td class="model">
+                    <form:checkbox path="select"value="${abc.index}"/>
+                       <labelfor="model1">${model.modelName}</label>
+                       <p>${model.modelDesc}</p>
+                   </td>
+                   <td>
+                    <form:select path ="modelList[${abc.index}].positionIdx"onchange="selectPoss(this);">
+                   <optionvalue="">请选择</option>
+                   <form:option value="A"label="位置A"/>
+                   <form:option value="B"label="位置B"/>
+                   <form:option value="C"label="位置C"/>
+                   <form:option value="D"label="位置D"/>
+                   <form:option value="E"label="位置E"/>
+                   <form:option value="F"label="位置F"/>
+          </form:select>
+                   </td>
+                   <td>
+                    <a href="#"onclick="getModelDetail(${model.modelID});"><imgsrc="<%=request.getContextPath()%>/images/edit.gif"alt="编辑"/></a>
+                       <a href="#"onclick="deleteModel(${model.modelID});"><imgsrc="<%=request.getContextPath()%>/images/delete.gif"alt="删除" /></a>
+                   </td>
+               </tr>
+            </c:forEach>
+
+
+我们常会用c标签来遍历需要的数据，为了方便使用，varStatus属性可以方便我们实现一些与行数相关的功能，如：奇数行、偶数行差异；最后一行特殊处理等等。先就varStatus属性常用参数总结下：
+${status.index}      输出行号，从0开始。
+${status.count}      输出行号，从1开始。
+${status.current}   当前这次迭代的（集合中的）项
+${status.first}  判断当前项是否为集合中的第一项，返回值为true或false
+${status.last}   判断当前项是否为集合中的最后一项，返回值为true或false
+begin、end、step分别表示：起始序号，结束序号，跳跃步伐。
+
+如：<c:forEach begin='1' end='5' step='2' items='${list}' var='item'>
+表示：操作list集合汇中1~5条数据，不是逐条循环，而是按每2个取值。即操作集合中的第1、3、5条数据。
+

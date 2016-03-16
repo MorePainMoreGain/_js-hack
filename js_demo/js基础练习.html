@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>js 基础练习</title>
+<style>
+.carousel_wrap {position: relative;height: 200px;width: 300px;padding: 1px;border: 2px solid #000;overflow: hidden;}
+.carousel_wrap .carousel {position: absolute;margin: 0;padding: 0;list-style: none;left:0;top:0;transition: left 1s;}
+.carousel_wrap .carousel li {float: left;height: 200px;width: 300px;text-align: center;line-height: 200px;border: 1px solid #f00;background: #ccc;}
+</style>
+</head>
+<body>
+	<h2>提取url参数成为json数据</h2>
+	<div id="url"></div>
+	<h2 id="nine">原生的99乘法表</h2>
+	<h2 >原生的轮播图</h2>
+	<div class="carousel_wrap">
+		<ul class="carousel" id="carousel">
+			<li>轮播图1</li>
+			<li>轮播图2</li>
+			<li>轮播图3</li>
+			<li>轮播图4</li>
+			<li>轮播图5</li>
+		</ul>
+	</div>
+	
+<script type="text/javascript">
+	//提取url参数成为json数据
+	//例如：http://dayi35.com?useid=1&usename=jack&usesex=boy&e
+	function urlJson(url) {
+		var url = url.split("?")[1];
+		var url2 = url.split("&");
+		var json={};
+		for(var a=0;a<url2.length;a++){
+			var param = url2[a].split("=");
+			json[param[0]]=param[1];
+		}
+		//return json;
+		return JSON.stringify(json);
+	}
+	console.log(urlJson("http://dayi35.com?useid=1&usename=jack&usesex=boy&e"));
+	document.getElementById("url").innerHTML= urlJson("http://dayi35.com?useid=1&usename=jack&usesex=boy&e");
+	
+	//九九乘法
+	function mul99(){
+		var table = document.createElement("table");
+		var tbody = document.createElement("tbody");
+		table.appendChild(tbody);
+		for(var i=0;i<9;i++){
+			tbody.insertRow(i);
+			for(var y= 0;y<9;y++){
+				tbody.rows[i].insertCell(y);
+				if(i>=y) {
+					tbody.rows[i].cells[y].appendChild(document.createTextNode(i+1+"*"+(y+1)+"="+(i+1)*(y+1)));
+				}else {
+					tbody.rows[i].cells[y].style.backgroundColor = "#eee";
+				}
+			}
+		}
+		document.body.insertBefore(table,document.getElementById("nine").nextSibling);
+		document.getElementById("url").style.border = " 1px solid #ddd";
+		var tds = document.getElementsByTagName("td");
+		for(var a=0; a<tds.length;a++) {
+			/*为什么用for in 会报错呢？nodeList*/
+			/*因为a 会多出输出几个 length item 还有 namedItem这几个值*/
+			tds[a].style.border = "1px solid #ccc";
+		}
+		
+	}
+	
+	var carousel = {
+		//创造轮播必要的元素
+		init: function(){
+			//创造元素
+			var c_wrap = document.createElement("div");
+			c_wrap.setAttribute("id", "c_wrap");
+			var ul = document.createElement("ul");
+			
+			for(var i=0;i<=5;i++) {
+				var li = document.createElement("li");
+				//li.appendChild(document.createTextNode("我是第"+i+"张carousel"));
+				li.innerHTML="我是第"+i+"张carousel";
+				//虽然innerText跟outerText与innerHTML的效果差不多，但是firefox仅支持textContent
+				
+				ul.appendChild(li);
+			}
+			document.body.appendChild(c_wrap);
+			document.getElementById("c_wrap").appendChild(ul);
+		
+			ul.className="carousel";
+			//修饰样式
+			ul.style.cssText="position: absolute;width: 1000px;height: 200px;background: #eee;border: 2px solid #000;list-style:none;overflow: hidden;margin: 0;";
+			//ul.children.cssText="float: left;width:200px;";
+			//ul.children.style.width="200px";
+			//用原生js操作css果然very不方便，very的难啊
+		},
+		initStyle:function(){
+			var ul = document.querySelector(".carousel");
+			
+			//console.log(ul.childNodes[0]);//输出了换行符，在火狐中换行符也被当做了子元素
+			//有两种方法获得ul下面的li元素，一、用childNodes；二、链式操作
+			//一、如果要用childNodes，火狐下换行符也是childNodes的一员，所以要把换行符去掉
+			
+			//var li = ul.childNodes;
+			//for(var i=0;i<li.length;i++){
+			//	if(li[i].nodeType==3) {
+			//		//3表示的是文本节点，在这里是换行符
+			//		ul.removeChild(li[i])
+			//		
+			//	}
+			//}
+			
+			//二、链式操作
+			var li =ul.getElementsByTagName("li");
+			
+			var wid=0,hei=0;
+			for(var i=0;i<li.length;i++){
+				//wid+=li[i].style.width;//为啥这一步获取的width是空的呢？？？因为是获取标签中的css的文本值，并不涉及浏览器计算
+				//document.defaultView.getComputedStyle(li[i],null).width 这种方法获取的跟style获取的值类型一样都是带有px值的数非纯数值
+				//ie不支持cssText
+				wid+=li[i].offsetWidth;
+				//hei+=li[i].height();
+				
+			}
+			ul.style.width = wid+"px";
+			//ul.style.Height =hei+"px";
+			
+		},
+		autoMove: function(){
+			//原生的方法
+			this.initStyle();
+			var ul = document.getElementById("carousel");
+			var li =ul.getElementsByTagName("li");
+			//var active = ul.getElementsByClassName("active")[0];
+			
+			var $this =this;
+			function interval(){
+				var active,current;
+				//遍历找出className为active的元素
+				for(var i = 0;i<li.length;i++){
+					if(li[i].className=="active"){
+						active =i;
+						break;
+					}
+				}
+				
+				//获取当前选中的下标
+				if(typeof(active)=="undefined"){;
+					li[0].setAttribute("class","active");
+					current = 0;
+				}else {
+					current = active;
+					console.log(current)
+				}
+				return current;
+				//$this.nextFn(current);
+			}
+			window.setInterval(function(){
+				//interval();
+				$this.nextFn(interval());
+			},3000);
+			//HTML5方法 
+			//getElementsByClassName 与querySelector 都是html的规范新加上去的，特点是ie9以上才支持
+			//var active = ul.getElementsByClassName("active")[0];
+			
+			//var li_active = document.querySelector(".carousel").querySelector(".active");
+			//var current;
+			//if(li_active.length==0){
+			//	document.querySelector(".carousel").querySelector("li")[0].setAttribute("className","active");
+			//	current=0;
+			//}else {
+			//	current = document.querySelector(".carousel").querySelector(".active").index();
+			//	document.querySelector(".carousel").querySelector(".active").removeAttribute("")
+			//}
+			
+			
+		},
+		nextFn: function(current){
+			var ul = document.getElementById("carousel");
+			var li =ul.getElementsByTagName("li");
+			
+			var left = ul.style.left.replace(/(px)?$/g,"");
+			var width =li[current].offsetWidth;
+			
+			if(current==li.length-1){
+				li[li.length-1].removeAttribute("class");
+				li[0].setAttribute("class","active");
+				ul.style.left="0";
+			}else {
+				li[current+1].setAttribute("class","active");
+				li[current].removeAttribute("class");
+				ul.style.left=left-width+"px";
+			}
+			
+			
+			
+		}
+		
+		
+	}
+
+	//dom 加载完之后
+	document.addEventListener("DOMContentLoaded",function(){
+		mul99();
+		//carousel.init();
+		carousel.autoMove();
+	},false);
+	
+	
+	
+	//扩展方法,获取视窗的大小
+	window.width= function(){
+		if(document.compatMode=="BackCompat") {
+			return Math.max(document.body.clientWidth,document.body.OffsetWidth);
+		}else {
+			return Math.max(document.documentElement.clientWidth,document.documentElement.offsetWidth);
+		}
+	}
+</script>
+</body>
+</html>

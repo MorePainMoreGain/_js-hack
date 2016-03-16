@@ -1,0 +1,136 @@
+js 常用方法
+
+1.0获得元素相对于文档的位置用offset，那么相对于其中某个元素的位置呢？
+那么就可以用position，该方法获取的是相对于父元素的位置。
+
+2.0  //设置某天后的日期
+   var setSomeDate = function(data) {
+       //更改交收信息日期显示格式
+       var nowDate = new Date();
+       nowDate.setDate(nowDate.getDate()+data);
+       var year = nowDate.getFullYear();
+       var month = nowDate.getMonth()+1;
+       var date = nowDate.getDate();
+       var result =year+"-"+month+"-"+date;
+       //获取到数值后重置为当前日期，方便再次调用
+        nowDate.setDate(nowDate.getDate());
+       return result;
+   }
+
+   3.0
+/*设置与获取cookie函数*/
+var cookie = {
+    set:function(key,val,time){//设置cookie方法
+        var date=new Date(); //获取当前时间
+        var expiresDays=time;  //将date设置为n分钟以后的时间
+        date.setTime(date.getTime()+expiresDays*60*1000); //格式化为cookie识别的时间
+        document.cookie=key + "=" + val +";expires="+date.toGMTString()+";path=/";  //设置cookie
+    },
+    get:function(key){//获取cookie方法
+        /*获取cookie参数*/
+        var getCookie = document.cookie.replace(/[ ]/g,"");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+        var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+        var tips;  //声明变量tips
+        for(var i=0;i<arrCookie.length;i++){   //使用for循环查找cookie中的tips变量
+            var arr=arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+            if(key==arr[0]){  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                tips=arr[1];   //将cookie的值赋给变量tips
+                break;   //终止for循环遍历
+            }
+        }
+        return tips;
+    }
+}
+
+4.0 设置输入字数限制
+	//初始化字符输入限制:textobj输入框，tipobj提示数字
+	var numLimit_init = function(textobj,tipobj) {
+		var limit = 200;//最大输入字符量
+		var val = textobj.val();
+		tipobj.html(limit-val.length>0?limit-val.length:0);
+
+	};
+	//输入字数限制:textobj输入框，tipobj提示数字，limit限制字数
+            var numLimit = function(textobj,tipobj,limit) {
+                var val = textobj.val();
+                tipobj.html(limit-val.length);
+                if(val.length>limit) {
+                    //如果多于限制字数则截取字符串
+                    textobj.val(val.substr(0,limit));
+                }
+            };
+	//初始化字符限制
+	var thisobj =zhuan.find(".limit");
+	thisobj.each(function(){
+		var $this =$(this);
+		var targetobj =$this.next().children("span");
+		numLimit_init($this,targetobj);
+	});
+
+5.0 需求 hover btn 弹出可输入信息的弹框，离开btn或者离开弹窗才关闭弹窗；
+
+	难点 离开btn事件和进入弹窗事件同时发生。难以区分。
+	
+	解决方案：
+	var time1 =null;
+	var lay_index;
+	$(".btn").on("mouseenter",function(){
+		
+		lay_index = layer.open();//表示弹窗
+		
+	})；
+	
+	错误解法：
+	 //根据鼠标停留的位置，判断显示弹窗的显隐
+	$("body").on("mouseleave",".zhuan",function(){
+		time1 =setTimeout(function(){layer.close(lay_index)},50);
+	
+	});
+	//如果进入弹窗则不关闭，如果不是则关闭
+		$(".blueLayer").mouseenter(function(){clearTimeout(time1)});
+		$(".blueLayer").mouseleave(function(){layer.close(lay_index)});
+		
+	
+	正确解法：
+	 //根据鼠标停留的位置，判断显示弹窗的显隐
+	$("body").on("mouseleave",".zhuan",function(){
+		time1 =setTimeout(function(){layer.close(lay_index)},50);
+		//如果进入弹窗则不关闭，如果不是则关闭
+		$(".blueLayer").mouseenter(function(){clearTimeout(time1)});
+		$(".blueLayer").mouseleave(function(){layer.close(lay_index)});
+
+
+	});
+	
+错误解法的错误就在与btn的leave事件，和窗口的enter事件是同时发生的，所以会造成enter之后也没办法clear掉setTimeout导致进入窗体也还是会弹窗消失。
+
+6.0 回车事件 ,注意如果是回车触发提交表单按钮的话，要添加return false; 因为事件冒泡会去到form，而ie下回车也会提交表单，所以要添加return false;
+阻止事件冒泡
+
+$(document).keydown(function(event){
+	event=document.all?window.event:event;
+	if((event.keyCode || event.which)==13){
+		$("#loginTradeBtn").trigger("click");
+	}
+	return false;
+})
+	
+	
+7.0 fragment 文档碎片，可以提高向文档追加节点的效率
+
+   //fragment 文档碎片使用方法
+   var frag = document.createDocumentFragment(); // 创建文档碎片  
+   var frag2 = document.createDocumentFragment(); // 创建文档碎片  
+   
+   for (var i=0;i<5;i++) {
+	 //js原生实现	
+	 var li = document.createElement("li");
+	 li.innerHTML = "js原生"+i;
+	 frag.appendChild(li);
+     /jquery 实现
+	 var li_2 = "<li>jquery实现"+i+"</li>"
+	 $(li_2).appendTo($(frag2));
+   }
+   document.getElementById("ul2").appendChild(frag);
+   $(".fragment .ul1").append(frag2);
+	

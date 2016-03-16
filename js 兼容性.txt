@@ -1,0 +1,168 @@
+ 
+ 1.0有高人指出上面几行代码在Firefox等浏览器中可以正常运行，即你选中复选框或取消复选框都会弹出一个对话框，但是在IE中却不会正常执行，即选中或取消复选框不会立即弹出对话框。
+必须在选中或取消复选框之后再点击除了复选框之外的任何一个地方，据说是因为IE会等到复选框失去焦点之后才会触发change事件。
+ if ($.browser.msie) {
+  $('input:checkbox').click(function () {
+   this.blur();  
+   this.focus();
+  });  
+ };
+ jq 1.9以后用support代替browser
+ 
+ //以下语句可以检测是否为：IE6-8
+ /* IE会等到radios失去焦点后才能触发change事件 */
+    if (!$.support.leadingWhitespace) {
+        $('input:radio').click(function () {
+            this.blur();
+            this.focus();
+        });
+    }
+	
+	//判断ie版本的函数，非常好用
+/*判断IE版本*/
+	var isIE = function(ver){
+		var b = document.createElement('b')
+		b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->'
+		return b.getElementsByTagName('i').length === 1
+	}
+
+2.0 html内容appendTo会出错，即，syntax error， unrecognized expression
+
+jquery 1.9*开始为了安全性，必须将script中的html内容parseHTML转换后使用。否则就报无法解析HTML内容的错误 
+
+
+3.0 	//ie9及以下不支持 doesn't support File API，所以不用挣扎，要么用插件，要么放弃
+
+4.0 使用join方法将数组转换成字符串无效
+	因为join的方法是即刻的转换结果并不会保存到原来数组里面
+	例如：
+	var arr = ["14", "15", "16", "17", "20", "22", "15", "17", "15", "24", "15"];
+        arr.join("+")
+   console.log(arr);
+   结果： ["14", "15", "16", "17", "20", "22", "15", "17", "15", "24", "15"]；
+   如果是：console.log( arr.join("+"));
+   则结果为：
+   14+15+16+17+20+22+15+17+15+24+15
+   
+   
+5.0 使得ie8以下支持stopPropagation()和preventDefault(),可以用以下方法
+	Event.prototype.stopPropagation = function ()
+{
+    if (this.stopPropagation)
+    {
+        return this.stopPropagation();
+    }
+    this.cancelBubble = true;
+};
+Event.prototype.preventDefault = function ()
+{
+    if (this.preventDefault)
+    {
+        return this.preventDefault();
+    }
+    this.returnValue = false;
+};
+
+5.0
+
+默认情况下，单个输入框，无论按钮的type="submit"还是type="button"类型，回车即提交,e.preventDefault()也没用。
+
+1.当type="submit"时，无论有几个type="text"输入框，回车均表示提交。（submit）
+
+2.当type="button"时，且存在多个输入框，回车不提交。（button）
+
+3.解决单个输入框的回车即提交问题，参考第二点：可以增加一个input="text"，隐藏; 然后type类型为button。
+
+6.0 表单提交不能只提交个数组，数组不能提交成功，后台也难以获取，提交的数据不要json里面再嵌套json，这样子里面的json必须转换成json字符串，否则后台拿不到
+
+7.0 setTimeout() 是一个堆栈，调用多个之后，clearTimeout(),只会先清除后加的setTimeout()函数。
+
+8.0 获取元素位置，各个浏览器兼容性的方法
+
+9.0 iframe的高度，从父窗体获取iframe里面文档的高度通常会出错，而且兼容性不好，今天想到一个新的办法就是，iframe先获取他自身的高度，再传值到父窗体
+
+判断iframe是否加载完成：
+var iframe = document.createElement("iframe");
+iframe.src = "http://www.planabc.net";
+
+if (iframe.attachEvent){
+    iframe.attachEvent("onload", function(){
+        alert("Local iframe is now loaded.");
+    });
+} else {
+    iframe.onload = function(){
+        alert("Local iframe is now loaded.");
+    };
+}
+
+document.body.appendChild(iframe);
+
+10.0 jsonp 在现代浏览器中，如果遇上网络不通等情况，会静静地失败，也就是连error也不进去，而ie9以下则能够跑进去
+
+11.0 
+    setTimeout(function(){console.log(1);}, 0);
+    console.log(2);
+以上代码输出的结果为2、1；setTimeout(fn,0)的意思是尽可能早地执行，马上把回调函数加到任务列表而已。但是JavaScript执行分为执行栈和任务队列。只有执行栈为空了，才会去读取任务队列，将任务队列的事件加入到执行栈当中。
+所以setTimeout就算设置执行时间为0也是会后于执行栈的事件执行。这就是就算设置延迟时间为0也不能保证回调函数马上执行的原因。
+
+12.0 浮点数计算
+  1 如果知道计算结果的小数点位数，可以用toFixed（）解决，否则要用下面这种加工过的函数解决
+//加减乘除，消除js原生的bug
+function add(a, b) {
+    var c, d, e;
+    try {
+        c = a.toString().split(".")[1].length;
+    } catch (f) {
+        c = 0;
+    }
+    try {
+        d = b.toString().split(".")[1].length;
+    } catch (f) {
+        d = 0;
+    }
+    return e = Math.pow(10, Math.max(c, d)), (mul(a, e) + mul(b, e)) / e;
+}
+
+function sub(a, b) {
+    var c, d, e;
+    try {
+        c = a.toString().split(".")[1].length;
+    } catch (f) {
+        c = 0;
+    }
+    try {
+        d = b.toString().split(".")[1].length;
+    } catch (f) {
+        d = 0;
+    }
+    return e = Math.pow(10, Math.max(c, d)), (mul(a, e) - mul(b, e)) / e;
+}
+
+function mul(a, b) {
+    var c = 0,
+        d = a.toString(),
+        e = b.toString();
+    try {
+        c += d.split(".")[1].length;
+    } catch (f) {}
+    try {
+        c += e.split(".")[1].length;
+    } catch (f) {}
+    return Number(d.replace(".", "")) * Number(e.replace(".", "")) / Math.pow(10, c);
+}
+
+function div(a, b) {
+    var c, d, e = 0,
+        f = 0;
+    try {
+        e = a.toString().split(".")[1].length;
+    } catch (g) {}
+    try {
+        f = b.toString().split(".")[1].length;
+    } catch (g) {}
+    return c = Number(a.toString().replace(".", "")), d = Number(b.toString().replace(".", "")), mul(c / d, Math.pow(10, f - e));
+}
+
+13.0 表单元素的顽固性；checked，disabled等表单元素的prop属性比较顽固，刷新页面显示的也是刷新页面之前的值，并不会去load 里面的默认值。
+
+14.0 使用validate插件的input等表单控件必须要有name属性否则会报错：element is undefined；

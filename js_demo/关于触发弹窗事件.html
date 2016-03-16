@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>关于触发弹窗事件的一个小demo</title>
+<style>
+body{font-family: "Microsoft YaHei"}
+table td {padding: 5px 10px;}
+
+table {border: 1px solid #ccc;}
+table tr.tan_elem {background: #eee;}
+
+
+.form_wrap {background: #f8f8f8;width: 300px;}
+.form_wrap h2 {font-size: 18px;font-weight: normal;text-align: center;background: #333;color: #fff;}
+.form_wrap .form_row {margin: 10px 5px;text-align: center;}
+.form_wrap .btn_wrap {text-align: center;padding: 10px 0 20px;}
+
+.search_module  {display: inline-block;}
+.search_module  input {padding: 5px;}
+.search_module  [type="text"] {width: 150px;border: 1px solid #000;}
+.search_module  [type="submit"] {border: 1px solid #f00;}
+
+.search_module .flex {display: flex;}
+#ul2:after {content:"‱"}
+
+.ten {position: absolute;top: 50%;left: 50%;width: 100px;height: 100px;margin: -50px 0 0 -50px;text-align: center;background: #ccc;}
+.ten .one {position: relative;top: 50%;height: 1px;background: #f00;}
+.ten .two {display: inline-block;height: 100%;width: 1px;background: #f00;}
+</style>
+</head>
+<body>
+<table>
+<tbody>
+	<tr><td>匿名</td></tr>
+	<tr class="tan_elem"><td>张三</td></tr>
+	<tr class="tan_elem"><td>李四</td></tr>
+	<tr><td>匿名</td></tr>
+</tbody>
+</table>
+<div class="form_wrap">
+	<h2> 详细信息</h2>
+	<form>
+		<div class="form_row">
+			<label>姓名：</label><input type="text" class="name"/>
+		</div>
+		<div class="form_row">
+			<label>电话：</label><input type="text" class="tel"/>
+		</div>
+		<div class="btn_wrap">
+			<input type="submit" value="提交"/>
+			<input type="button" value="取消"/>
+		</div>
+	</form>
+</div>
+
+<div class="search_module">
+<h3>css实现但搜索框无缝连接</h3>
+	<form class="common">
+		<input type="text">
+		<input type="submit" value="搜索">
+	</form>
+	<form class="flex">
+		<input type="text">
+		<input type="submit" value="搜索">
+	</form>
+</div>
+<ul>
+<li></li>
+</ul>
+<div class="fragment">
+	<h3>js fragment 使用方法‱</h3>
+	<ul class="ul1"></ul>
+	<ul class="ul2" id="ul2"></ul>
+</div>
+<div class="indexof">
+<div class="ten">
+ <div class="one"></div>
+ <div class="two"></div>
+</div>
+</div>
+<table class="table">
+	<tr class="tr">
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+
+<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+	
+$(function(){
+   var search_data ={
+       url: "/bargain/list/data",
+       form_data: $("#page_form").serialize(),
+       containDom:$("#page_form").find("tbody")
+   }
+  
+   
+   //fragment 文档碎片使用方法
+   var frag = document.createDocumentFragment(); // 创建文档碎片  
+   var frag2 = document.createDocumentFragment(); // 创建文档碎片  
+   
+   for (var i=0;i<5;i++) {
+	 var li = document.createElement("li");
+	 li.innerHTML = "js原生"+i;
+	 frag.appendChild(li);
+   
+	 var li_2 = "<li>jquery实现"+i+"</li>"
+	 $(li_2).appendTo($(frag2));
+   }
+   document.getElementById("ul2").appendChild(frag);
+   
+  $(".fragment .ul1").append(frag2);
+  
+  //检测是否包含某个字符串
+  var chuan1 = "/index";
+  var chuan2 = "/friend/index";
+  
+  var target1 ="/index";
+  var target2 ="/friend/index";
+  
+  console.log(chuan2.indexOf(target1));
+  console.log(chuan2.indexOf(target2));
+  
+  
+  
+
+  
+});
+</script>
+</body>
+</html>
