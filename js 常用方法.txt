@@ -133,4 +133,9 @@ $(document).keydown(function(event){
    }
    document.getElementById("ul2").appendChild(frag);
    $(".fragment .ul1").append(frag2);
+   
+8.0 类数组字符串在经过eval之后就能变为数组？？
+如："[{name:djh,age: 22}]"
+
+var arr1 = "[{name:djh,age: 22}]";
 	

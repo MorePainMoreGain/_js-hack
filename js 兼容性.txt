@@ -166,3 +166,141 @@ function div(a, b) {
 13.0 表单元素的顽固性；checked，disabled等表单元素的prop属性比较顽固，刷新页面显示的也是刷新页面之前的值，并不会去load 里面的默认值。
 
 14.0 使用validate插件的input等表单控件必须要有name属性否则会报错：element is undefined；
+
+15.0 使用jsonp的一般方法
+注意jsonp请求的返回值要用jsonp的函数名特别包装才可以，取到的数据会报错————SyntaxError: missing ; before statement
+
+/**
+ * ajax_jsonP
+ * @param url string 地址
+ * @param url obj or post string 数据
+ * @param callback function 回调
+ * @param errorback function 错误回调
+ * */
+var ajaxJsonp = function (url, params, callback, errorback) {
+	layer.load();
+
+	$.ajax({
+		type : "get",
+		url : url,
+		data:params,
+		dataType : "jsonp",
+		jsonp: "jsonpcallback",
+		success : function(thisData){
+			console.info(thisData);
+			/*if (thisData.retCode == "SUCCESS") {
+				//layer.msg(thisData.msg,{icon:1});
+				//setTimeout(function(){callback(thisData);/!*layer.closeAll("loading");*!/}, 1000);
+				if (callback != undefined) {
+					callback(thisData);
+				}
+			}else {
+				layer.closeAll("loading");
+				layer.alert(thisData.msg,{icon:2,end: function() {
+					if (errorback != undefined) {
+						errorback(thisData);
+					}
+				}
+				});
+			}*/
+		},
+		error: function(error) {
+			console.info(error);
+			layer.closeAll("loading");
+			layer.alert("系统出了小差，请稍后再试！",{icon:2,end:function() {
+				if (errorback != undefined) {
+					errorback("系统出了小差，请稍后再试！");
+				}
+			}
+			});
+		}
+	});
+
+};
+
+
+/**djh
+ * ajaxJsonpMsg 没有loading但会alert返回信息的jsonp方法，一般用于发送验证码
+ * @param url string 地址
+ * @param url obj or post string 数据
+ * @param callback function 回调
+ * @param errorback function 错误回调
+ * */
+var ajaxJsonpMsg = function (url, params, callback, errorback) {
+	layer.load();
+
+	$.ajax({
+		type : "get",
+		url : url,
+		data:params,
+		dataType : "jsonp",
+		jsonp: "jsonpcallback",
+		success : function(thisData){
+			if (thisData.retCode == "SUCCESS") {
+				layer.msg(thisData.msg,{icon:1});
+				setTimeout(function(){callback(thisData);layer.closeAll("loading");}, 1000);
+			}else {
+				layer.alert(thisData.msg,{icon:2,time:1000}, function (index) {
+					layer.closeAll("loading");
+					if (errorback != undefined) {
+						errorback(thisData);
+					}
+				});
+			}
+		},
+		error: function(thisData){
+			layer.closeAll("loading");
+			layer.alert("系统出了小差，请稍后再试!",{icon:2,time:1000}, function (thisData) {
+				if (errorback != undefined) {
+					errorback("系统出了小差，请稍后再试!");
+				}
+			});
+		}
+	});
+
+};
+
+16.0 浏览器会记住用户名跟密码，有时候会出现我不想让他记住的，也自动填充了，这个时候只要在前面加个隐藏的<input type="password">就可以了
+
+17.0 浏览器默认会使用科学计数法，这个时候可以用var num = new Number(num);或者 parseFloat(num).toString();
+
+18.0 状态码302一般是由于没有权限造成；而状态码504翻页一般是由于没有这个页造成的。
+
+19.0 Firefox下blur里面设置focus会无效，需要设置setTimeout()才会生效；
+$input.blur(function(){
+  　　　　………………
+        setTimeout(function(){$input.focus()},0)；
+}
+
+20.0 用原生jq添加移除checked属性无效，因为jquery修改的是property而不是attribute。需要用原生的javascript才会有效
+    $(".lading_type").on("change",function(){
+            if($(".lading_type:checked").val()==0){
+                //第一个选中
+
+                var type2 = document.getElementById("lading_type2");
+                if(isIE()){
+                    this.setAttribute("checked","");//for ie
+                }else {
+                    this.setAttribute("checked","checked");
+                }
+                this.checked = true;
+
+                //type2.setAttribute("checked","");//for IE
+                type2.removeAttribute("checked");//for other browser
+                type2.checked = false;
+
+            }else {
+
+                var type1 = document.getElementById("lading_type1");
+                if(isIE()){
+                    this.setAttribute("checked","");//for ie
+                }else {
+                    this.setAttribute("checked","checked");
+                }
+                this.checked = true;
+
+                //type1.setAttribute("checked","");//for IE
+                type1.removeAttribute("checked");//for other browser
+                type1.checked = false;
+            }
+        });

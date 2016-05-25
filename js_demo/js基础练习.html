@@ -5,7 +5,7 @@
 <title>js 基础练习</title>
 <style>
 .carousel_wrap {position: relative;height: 200px;width: 300px;padding: 1px;border: 2px solid #000;overflow: hidden;}
-.carousel_wrap .carousel {position: absolute;margin: 0;padding: 0;list-style: none;left:0;top:0;transition: left 1s;}
+.carousel_wrap .carousel {position: absolute;margin: 0;padding: 0;list-style: none;left:0;top:0;}
 .carousel_wrap .carousel li {float: left;height: 200px;width: 300px;text-align: center;line-height: 200px;border: 1px solid #f00;background: #ccc;}
 </style>
 </head>
@@ -23,8 +23,15 @@
 			<li>轮播图5</li>
 		</ul>
 	</div>
-	
+	<em>em</em>
+	<i>i</i>
+	<b>b</b>
+	<strong>strong</strong>
+	<blockquote>块引用</blockquote>
+<script src="http://cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script src="js/mycarousel.js"></script>
 <script type="text/javascript">
+
 	//提取url参数成为json数据
 	//例如：http://dayi35.com?useid=1&usename=jack&usesex=boy&e
 	function urlJson(url) {
@@ -150,7 +157,7 @@
 					current = 0;
 				}else {
 					current = active;
-					console.log(current)
+					//console.log(current)
 				}
 				return current;
 				//$this.nextFn(current);
@@ -173,7 +180,6 @@
 			//	document.querySelector(".carousel").querySelector(".active").removeAttribute("")
 			//}
 			
-			
 		},
 		nextFn: function(current){
 			var ul = document.getElementById("carousel");
@@ -189,11 +195,16 @@
 			}else {
 				li[current+1].setAttribute("class","active");
 				li[current].removeAttribute("class");
-				ul.style.left=left-width+"px";
-			}
-			
-			
-			
+				//借助css的transition实现的动画
+				//ul.style.left=left-width+"px";
+				//无须借助css实现的slide
+				var i=0;
+				do{
+					i++;
+					ul.style.left=left-i+"px";
+					width--;
+				}while(width>0);
+			}	
 		}
 		
 		
@@ -216,6 +227,8 @@
 			return Math.max(document.documentElement.clientWidth,document.documentElement.offsetWidth);
 		}
 	}
+	
+	//$(".carousel").carousel();
 </script>
 </body>
 </html>

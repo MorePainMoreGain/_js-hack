@@ -26,6 +26,11 @@ table tr.tan_elem {background: #eee;}
 .ten {position: absolute;top: 50%;left: 50%;width: 100px;height: 100px;margin: -50px 0 0 -50px;text-align: center;background: #ccc;}
 .ten .one {position: relative;top: 50%;height: 1px;background: #f00;}
 .ten .two {display: inline-block;height: 100%;width: 1px;background: #f00;}
+
+/*价格审核列表页，小form样式*/
+.singleForm {position: relative;width: 100px;border: 1px solid #eea236;border-radius: 3px;}
+.singleForm .input {display: inline-block;*display: inline;*zoom: 1;width: 58px;margin-left: 2px;border: none;}
+.singleForm .btn-sm {border-radius: 0;}
 </style>
 </head>
 <body>
@@ -63,6 +68,10 @@ table tr.tan_elem {background: #eee;}
 		<input type="text">
 		<input type="submit" value="搜索">
 	</form>
+	<div class="singleForm">
+		<input type="text" class="user-price input" value="{$value['user_price']}" >
+		<a  class="submit-review btn-sm btn-warning" href="javascript:;" title="提交审核"> <i class="glyphicon glyphicon-open"></i></a>
+	</div>
 </div>
 <ul>
 <li></li>
